@@ -1,7 +1,7 @@
 {
-  "name": "sport-events-api",
+  "name": "sport-events-backend",
   "version": "1.0.0",
-  "description": "API для организации спортивных мероприятий",
+  "description": "Backend for Sport Events App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

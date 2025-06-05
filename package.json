@@ -1,6 +1,7 @@
 {
   "name": "sport-events-api",
   "version": "1.0.0",
+  "description": "API для организации спортивных мероприятий",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -16,7 +17,6 @@
     "nodemailer": "^6.9.4",
     "exceljs": "^4.3.0",
     "jsonwebtoken": "^9.0.1",
-    "node-cron": "^3.0.2",
-    "@stripe/stripe-js": "^1.71.0"
+    "node-cron": "^3.0.2"
   }
 }

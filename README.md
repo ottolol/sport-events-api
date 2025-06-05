@@ -23,16 +23,16 @@ REST API для управления спортивными мероприяти
 
 ### 1. Клонируй репозиторий
 
-```bash
+```
 git clone https://github.com/ваше-имя/sport-events-backend.git 
 cd sport-events-backend```
 
 ### 2. Установка зависимостей
-```bash
+```
 npm install```
 
 ### 3. Запустить сервер
-```bash
+```
 npm start```
 
 ## Доступные эндпоинты:

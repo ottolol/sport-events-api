@@ -21,18 +21,72 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-exports.updateEvent = async (req, res) => {
-  const { id } = req.params;
-  const eventData = req.body;
+// exports.updateEvent = async (req, res) => {
+//   const { id } = req.params;
+//   const eventData = req.body;
+
+//   try {
+//     const event = await Event.findByPk(id);
+//     if (!event) return res.status(404).json({ error: "Мероприятие не найдено" });
+
+//     await event.update(eventData);
+//     res.json(event);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Ошибка обновления мероприятия" });
+//   }
+// };
+
+exports.upsertEvent = async (req, res) => {
+  const { id, title, description, date, location, photoUrl, price, status } = req.body;
 
   try {
-    const event = await Event.findByPk(id);
-    if (!event) return res.status(404).json({ error: "Мероприятие не найдено" });
+    if (!title || !description || !location || !date || !price) {
+      return res.status(400).json({ error: "Все обязательные поля должны быть заполнены" });
+    }
 
-    await event.update(eventData);
-    res.json(event);
+    // Если id <= 0 → создаем новое мероприятие
+    if (!id || id <= 0) {
+      const maxEvent = await Event.findOne({
+        order: [["id", "DESC"]],
+        attributes: ["id"],
+      });
+
+      const newId = maxEvent ? maxEvent.id + 1 : 1;
+
+      const newEvent = await Event.create({
+        id: newId,
+        title,
+        description,
+        date,
+        location,
+        photoUrl,
+        price,
+        status,
+      });
+
+      return res.json(newEvent);
+    }
+
+    // Иначе обновляем существующее
+    const event = await Event.findByPk(id);
+    if (!event) {
+      return res.status(404).json({ error: "Мероприятие не найдено" });
+    }
+
+    await event.update({
+      title,
+      description,
+      date,
+      location,
+      photoUrl,
+      price,
+      status,
+    });
+
+    return res.json(event);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Ошибка обновления мероприятия" });
+    console.error("Ошибка сохранения мероприятия", err);
+    return res.status(500).json({ error: "Не удалось сохранить мероприятие" });
   }
 };

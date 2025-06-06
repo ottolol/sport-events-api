@@ -45,7 +45,8 @@ exports.upsertEvent = async (req, res) => {
       return res.status(400).json({ error: "Все обязательные поля должны быть заполнены" });
     }
 
-    // Если id <= 0 → создаем новое мероприятие
+    let event;
+
     if (!id || id <= 0) {
       const maxEvent = await Event.findOne({
         order: [["id", "DESC"]],
@@ -54,7 +55,7 @@ exports.upsertEvent = async (req, res) => {
 
       const newId = maxEvent ? maxEvent.id + 1 : 1;
 
-      const newEvent = await Event.create({
+      event = await Event.create({
         id: newId,
         title,
         description,
@@ -64,29 +65,26 @@ exports.upsertEvent = async (req, res) => {
         price,
         status,
       });
+    } else {
+      const existingEvent = await Event.findByPk(id);
+      if (!existingEvent) {
+        return res.status(404).json({ error: "Мероприятие не найдено" });
+      }
 
-      return res.json(newEvent);
+      event = await existingEvent.update({
+        title,
+        description,
+        date,
+        location,
+        photoUrl,
+        price,
+        status,
+      });
     }
 
-    // Иначе обновляем существующее
-    const event = await Event.findByPk(id);
-    if (!event) {
-      return res.status(404).json({ error: "Мероприятие не найдено" });
-    }
-
-    await event.update({
-      title,
-      description,
-      date,
-      location,
-      photoUrl,
-      price,
-      status,
-    });
-
-    return res.json(event);
+    res.json(event); // Важно: возвращаем созданное/обновленное событие
   } catch (err) {
     console.error("Ошибка сохранения мероприятия", err);
-    return res.status(500).json({ error: "Не удалось сохранить мероприятие" });
+    res.status(500).json({ error: "Не удалось сохранить мероприятие" });
   }
 };
